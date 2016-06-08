@@ -24,6 +24,9 @@ EXCLUDE_FILES = True
 DIRS  = []
 FILES = []
 
+# Allow user to search a flat hierarchy of specified dirs. I.e. if "." is provided, just search cwd not any subdirs.
+FLAT = False
+
 
 # This is where the program kicks off.
 def parse():
@@ -32,7 +35,7 @@ def parse():
     global EXCLUDE_DIRS
     global DIRS
     global FILES
-    global TODOED
+    global FLAT
 
     # We first parse the params passed to the program which allows the user to specify directories to search/avoid and similarly with file types.
     parse_args()
@@ -61,11 +64,13 @@ def parse():
                 proceed = proceed and any(f.endswith(x) for x in FILES)
 
             # Now check if in valid directory.
-            # TODO This needs rewriting as '.' allows all files through, not just direct children as we'd like. I think this may just be an issue specific to '.'.
             if EXCLUDE_DIRS:
                 proceed = proceed and not any(f.startswith(x) for x in DIRS)
             else:
-                proceed = proceed and any(f.startswith(x) for x in DIRS)
+                if FLAT:
+                    proceed = proceed and any(x + "/" + name == f for x in DIRS)
+                else:
+                    proceed = proceed and any(f.startswith(x) for x in DIRS)
 
             # Only search the file for a todo comment if it is a valid file.
             if proceed:
@@ -120,6 +125,10 @@ def parse_args():
     global EXCLUDE_DIRS
     global DIRS
     global FILES
+    global FLAT
+
+    # Allow the shorthand notation for searching within the current dir of 'todo .' instead of 'todo +df .'
+    if ARGS == ["."]: ARGS = ["+df", "."]
 
     d_index = -1
     f_index = -1
@@ -128,6 +137,10 @@ def parse_args():
     if "+d" in ARGS:
         d_index = ARGS.index("+d")
         EXCLUDE_DIRS = False
+    if "+df" in ARGS:
+        d_index = ARGS.index("+df")
+        EXCLUDE_DIRS = False
+        FLAT = True
     if "-d" in ARGS:
         d_index = ARGS.index("-d")
 
