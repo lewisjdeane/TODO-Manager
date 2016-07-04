@@ -1,0 +1,84 @@
+todo . --write +f .py .java .txt
+
+
+### C:/Users/Lewis/Documents/Programming/Python programs/TODO Manager/todo.py ###
+
+  > TODO s spread across a whole project.
+
+    1 # 
+    2 # A simple tool to help you easily analayse TODOs spread across a whole project.
+    3 # 
+
+
+
+  > TODO Allow user to customise number of lines visible and trigger char.
+
+    8 
+    9 # TODO Allow user to customise number of lines visible and trigger char.
+    10 
+
+
+
+  > TODO Can speed these checks up, once false, we can break immediately.
+
+    70 
+    71 			# TODO Can speed these checks up, once false, we can break immediately.
+    72 			# First check if valid filetype.
+
+
+
+  > TODO Improve the error handling here.buil
+
+    88 			if proceed:
+    89 				# TODO Improve the error handling here.
+    90 				try:
+
+
+
+  > TODO " in x]) > 0:
+
+    96 				# If a todo exists we continue.
+    97 				if len([x for x in content if "TODO" in x]) > 0:
+    98 					# Print out filename.
+
+
+
+  > TODO " in line:
+
+    104 
+    105 						if "TODO" in line:
+    106 							index = len(line.split("TODO")[0])
+
+
+
+  > TODO ")[0])
+
+    105 						if "TODO" in line:
+    106 							index = len(line.split("TODO")[0])
+    107 							comment = line[index + 4:].strip()
+
+
+
+  > TODO " + comment + "\n\n"
+
+    108 
+    109 							output += "\n\n  > TODO " + comment + "\n\n"
+    110 							
+
+
+
+  > TODO .txt file
+
+    131 	if WRITE:
+    132 		# Write output to a TODO.txt file
+    133 		f = open("TODO.mdown", "w")
+
+
+
+  > TODO .mdown", "w")
+
+    132 		# Write output to a TODO.txt file
+    133 		f = open("TODO.mdown", "w")
+    134 		f.write(command + output);
+
+
