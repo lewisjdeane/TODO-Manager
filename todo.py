@@ -16,6 +16,9 @@ import os
 # Define global variable ARGS which we then parse.
 ARGS = sys.argv[1:]
 
+CONTEXT = True
+WRITE   = False
+
 # Define global variables which manage whether or not the user is choosing to search/ignore specific filetypes and directories.
 EXCLUDE_DIRS  = True
 EXCLUDE_FILES = True
@@ -28,14 +31,17 @@ FILES = []
 FLAT = False
 
 
+
 # This is where the program kicks off.
 def parse():
     global ARGS
+    global CONTEXT
+    global DIRS
     global EXCLUDE_FILES
     global EXCLUDE_DIRS
-    global DIRS
     global FILES
     global FLAT
+    global WRITE
 
     # We first parse the params passed to the program which allows the user to specify directories to search/avoid and similarly with file types.
     parse_args()
@@ -94,26 +100,25 @@ def parse():
                             index = len(line.split("TODO")[0])
                             comment = line[index + 4:].strip()
 
-                            # Try and print line above and below as well as line.
-                            if i < len(content) - 1 and i > 0:
-                                print("\n    TODO " + comment + "\n")
-                                print("    " + str(i) + " " + content[i - 1])
-                                print("  > " + str(i + 1) + " " + line)
-                                print("    " + str(i + 2) + " " + content[i + 1] + "\n")
-                            # Try to print line below and line.
-                            elif i > 0:
-                                print("\n    TODO " + comment + "\n")
-                                print("    " + str(i) + " " + content[i - 1])
-                                print("  > " + str(i + 1) + " " + line + "\n")
-                            # Try to print line above and line.
-                            elif i < len(content) - 1:
-                                print("\n    TODO " + comment + "\n")
-                                print("  > " + str(i + 1) + " " + line)
-                                print("    " + str(i + 2) + " " + content[i + 1] + "\n")
-                            # Otherwise we simpyl print the line.
-                            else:
-                                print("\n    TODO " + comment + "\n")
-                                print("  > " + str(i + 1) + " " + line + "\n")
+                            print("\n    TODO " + comment + "\n")
+                            
+                            if CONTEXT:
+                                # Try and print line above and below as well as line.
+                                if i < len(content) - 1 and i > 0:
+                                    print("    " + str(i) + " " + content[i - 1])
+                                    print("  > " + str(i + 1) + " " + line)
+                                    print("    " + str(i + 2) + " " + content[i + 1] + "\n")
+                                # Try to print line below and line.
+                                elif i > 0:
+                                    print("    " + str(i) + " " + content[i - 1])
+                                    print("  > " + str(i + 1) + " " + line + "\n")
+                                # Try to print line above and line.
+                                elif i < len(content) - 1:
+                                    print("  > " + str(i + 1) + " " + line)
+                                    print("    " + str(i + 2) + " " + content[i + 1] + "\n")
+                                # Otherwise we simpyl print the line.
+                                else:
+                                    print("  > " + str(i + 1) + " " + line + "\n")
                     
                     print("\n")
 
@@ -121,6 +126,7 @@ def parse():
 # Parses the command line args and updates the global vars accordingly.
 def parse_args():
     global ARGS
+    global CONTEXT
     global EXCLUDE_FILES
     global EXCLUDE_DIRS
     global DIRS
@@ -149,6 +155,8 @@ def parse_args():
         EXCLUDE_FILES = False
     if "-f" in ARGS:
         f_index = ARGS.index("-f")
+    if "--no-context" in ARGS:
+        CONTEXT = False
 
     # Once indices found/not found we then extract the relavent info for each param.
     if d_index != -1 and f_index == -1:
