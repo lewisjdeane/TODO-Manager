@@ -62,71 +62,72 @@ def parse():
 	# Now traverse whole tree.
 	for path, dirs, files in os.walk(cwd):
 		for name in files:
-			f = os.path.join(path, name)
-			f = f.replace('\\', '/')
+			if name != "TODO.mdown":
+				f = os.path.join(path, name)
+				f = f.replace('\\', '/')
 
-			# Boolean storing the value of whether or this file is valid based on the params the user provided.
-			proceed = True
+				# Boolean storing the value of whether or this file is valid based on the params the user provided.
+				proceed = True
 
-			# TODO Can speed these checks up, once false, we can break immediately.
-			# First check if valid filetype.
-			if EXCLUDE_FILES:
-				proceed = proceed and not any(f.endswith(x) for x in FILES)
-			else:
-				proceed = proceed and any(f.endswith(x) for x in FILES)
-
-			# Now check if in valid directory.
-			if EXCLUDE_DIRS:
-				proceed = proceed and not any(f.startswith(x) for x in DIRS)
-			else:
-				if FLAT:
-					proceed = proceed and any(x + "/" + name == f for x in DIRS)
+				# TODO Can speed these checks up, once false, we can break immediately.
+				# First check if valid filetype.
+				if EXCLUDE_FILES:
+					proceed = proceed and not any(f.endswith(x) for x in FILES)
 				else:
-					proceed = proceed and any(f.startswith(x) for x in DIRS)
+					proceed = proceed and any(f.endswith(x) for x in FILES)
 
-			# Only search the file for a todo comment if it is a valid file.
-			if proceed:
-				# TODO Improve the error handling here.
-				try:
-					content = [line.rstrip('\n').rstrip('\r') for line in codecs.open(f, 'r', encoding='utf-8')]
-				except:
-					content = []
-					pass
+				# Now check if in valid directory.
+				if EXCLUDE_DIRS:
+					proceed = proceed and not any(f.startswith(x) for x in DIRS)
+				else:
+					if FLAT:
+						proceed = proceed and any(x + "/" + name == f for x in DIRS)
+					else:
+						proceed = proceed and any(f.startswith(x) for x in DIRS)
 
-				# If a todo exists we continue.
-				if len([x for x in content if "TODO" in x]) > 0:
-					# Print out filename.
-					output += "\n### " + f + " ###"
+				# Only search the file for a todo comment if it is a valid file.
+				if proceed:
+					# TODO Improve the error handling here.
+					try:
+						content = [line.rstrip('\n').rstrip('\r') for line in codecs.open(f, 'r', encoding='utf-8')]
+					except:
+						content = []
+						pass
 
-					# Now we find the todos and print them out.
-					for i in range (0, len(content)):
-						line = content[i]
+					# If a todo exists we continue.
+					if len([x for x in content if "TODO" in x]) > 0:
+						# Print out filename.
+						output += "\n### " + f + " ###"
 
-						if "TODO" in line:
-							index = len(line.split("TODO")[0])
-							comment = line[index + 4:].strip()
+						# Now we find the todos and print them out.
+						for i in range (0, len(content)):
+							line = content[i]
 
-							output += "\n\n  > TODO " + comment + "\n\n"
-							
-							if CONTEXT:
-								# Try and print line above and below as well as line.
-								if i < len(content) - 1 and i > 0:
-									output += "    " + str(i) + " " + content[i - 1] + "\n"
-									output += "    " + str(i + 1) + " " + line + "\n"
-									output += "    " + str(i + 2) + " " + content[i + 1] + "\n\n"
-								# Try to print line below and line.
-								elif i > 0:
-									output += "    " + str(i) + " " + content[i - 1] + "\n"
-									output += "    " + str(i + 1) + " " + line + "\n\n"
-								# Try to print line above and line.
-								elif i < len(content) - 1:
-									output += "    " + str(i + 1) + " " + line + "\n"
-									output += "    " + str(i + 2) + " " + content[i + 1] + "\n\n"
-								# Otherwise we simpyl print the line.
-								else:
-									output += "    " + str(i + 1) + " " + line + "\n\n"
-					
-					output += "\n"
+							if "TODO" in line:
+								index = len(line.split("TODO")[0])
+								comment = line[index + 4:].strip()
+
+								output += "\n\n  > TODO " + comment + "\n\n"
+								
+								if CONTEXT:
+									# Try and print line above and below as well as line.
+									if i < len(content) - 1 and i > 0:
+										output += "    " + str(i) + " " + content[i - 1] + "\n"
+										output += "    " + str(i + 1) + " " + line + "\n"
+										output += "    " + str(i + 2) + " " + content[i + 1] + "\n\n"
+									# Try to print line below and line.
+									elif i > 0:
+										output += "    " + str(i) + " " + content[i - 1] + "\n"
+										output += "    " + str(i + 1) + " " + line + "\n\n"
+									# Try to print line above and line.
+									elif i < len(content) - 1:
+										output += "    " + str(i + 1) + " " + line + "\n"
+										output += "    " + str(i + 2) + " " + content[i + 1] + "\n\n"
+									# Otherwise we simpyl print the line.
+									else:
+										output += "    " + str(i + 1) + " " + line + "\n\n"
+						
+						output += "\n"
 
 	if WRITE:
 		# Write output to a TODO.txt file
