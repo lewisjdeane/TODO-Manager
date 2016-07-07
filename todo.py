@@ -30,7 +30,10 @@ FILES = []
 # Allow user to search a flat hierarchy of specified dirs. I.e. if "." is provided, just search cwd not any subdirs.
 FLAT = False
 
-VALID = ["--no-context", "--write", "+df", "+d", "-d", "+f", "-f"]
+# Define the default symbol that the program should search for.
+SYMBOL = "TODO"
+
+VALID = ["--no-context", "--write", "+df", "+d", "-d", "+f", "-f", "-s"]
 
 
 # This is where the program kicks off.
@@ -42,6 +45,7 @@ def parse():
 	global EXCLUDE_DIRS
 	global FILES
 	global FLAT
+	global SYMBOL
 	global WRITE
 
 
@@ -95,7 +99,7 @@ def parse():
 						pass
 
 					# If a todo exists we continue.
-					if len([x for x in content if "TODO" in x]) > 0:
+					if len([x for x in content if SYMBOL in x]) > 0:
 						# Print out filename.
 						output += "\n### " + f + " ###"
 
@@ -103,11 +107,11 @@ def parse():
 						for i in range (0, len(content)):
 							line = content[i]
 
-							if "TODO" in line:
-								index = len(line.split("TODO")[0])
-								comment = line[index + 4:].strip()
+							if SYMBOL in line:
+								index = len(line.split(SYMBOL)[0])
+								comment = line[index + len(SYMBOL):].strip()
 
-								output += "\n\n  > TODO " + comment + "\n\n"
+								output += "\n\n  > " + SYMBOL + " " + comment + "\n\n"
 								
 								if CONTEXT:
 									# Try and print line above and below as well as line.
@@ -131,8 +135,8 @@ def parse():
 
 	if WRITE:
 		# Write output to a TODO.txt file
-		f = open("TODO.mdown", "w")
-		f.write(command + output);
+		f = open("TODO.mdown", "wb")
+		f.write((command + output).encode("utf8"))
 		f.close()
 	else:
 		print(output)
@@ -194,6 +198,7 @@ def set_args(p):
 	global DIRS
 	global FILES
 	global FLAT
+	global SYMBOL
 	global WRITE
 
 	for x in p:
@@ -217,6 +222,8 @@ def set_args(p):
 		if x[0] == "-f":
 			EXCLUDE_FILES = True
 			FILES = x[1]
+		if x[0] == "-s":
+			SYMBOL = x[1][0]
 
 
 # Call the main parse function.
