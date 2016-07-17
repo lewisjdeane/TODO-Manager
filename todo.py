@@ -48,8 +48,10 @@ def parse():
 	global SYMBOL
 	global WRITE
 
-
-	command = "todo " + " ".join(ARGS) + "\n\n"
+	if ARGS != ["--rewrite"]:
+		command = "todo " + " ".join(ARGS) + "\n\n"
+	else:
+		command = read_todo_command() + "\n\n"
 
 	# We first parse the params passed to the program which allows the user to specify directories to search/avoid and similarly with file types.
 	parse_args()
@@ -224,6 +226,18 @@ def set_args(p):
 			FILES = x[1]
 		if x[0] == "-s":
 			SYMBOL = x[1][0]
+
+
+def read_todo_command():
+	global ARGS
+
+	try:
+		lines = [line.rstrip('\n').rstrip('\r') for line in codecs.open("TODO.mdown", 'r', encoding='utf-8')]
+		ARGS = lines[0][5:].split()
+		return lines[0]
+	except:
+		print("Error: Could not find last command.")
+		raise
 
 
 # Call the main parse function.
