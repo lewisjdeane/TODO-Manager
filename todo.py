@@ -3,10 +3,12 @@
 # 
 # Author(s):     Lewis Deane
 # License:       MIT
-# Last Modified: 8/6/2016
+# Last Modified: 18/7/2016
 # 
 
 # TODO Allow user to customise number of lines visible and trigger char.
+# TODO Add a .todoignore file for default things to ignore.
+# TODO Find common about of tabs, and remove the min
 
 import codecs
 import sys
@@ -33,6 +35,7 @@ FLAT = False
 # Define the default symbol that the program should search for.
 SYMBOL = "TODO"
 
+# Valid symbols to be used as params
 VALID = ["--no-context", "--write", "+df", "+d", "-d", "+f", "-f", "-s"]
 
 
@@ -103,7 +106,7 @@ def parse():
 					# If a todo exists we continue.
 					if len([x for x in content if SYMBOL in x]) > 0:
 						# Print out filename.
-						output += "\n### " + f + " ###"
+						output += "\n### " + f[len(cwd) + 1:] + " ###"
 
 						# Now we find the todos and print them out.
 						for i in range (0, len(content)):
